@@ -1,4 +1,4 @@
 arraysort-Py
 ============
 
-Python implementation for popular array sorting algorithms
+Python implementation and benchmark for popular array sorting algorithms
