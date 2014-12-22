@@ -65,19 +65,28 @@ def mergesortBU(arr1, option):
         i, curr = 0, 0  # beginning of each pair, current write point
         while i + step < length:
             left, right = i, i + step
-            while curr < length and curr < i + 2 * step:
-                if right == length or right == i + 2 * step:
+            limitR = i + 2 * step
+            if length < limitR:
+                limitR = length
+            limitL = i + step
+            
+            while left < limitL and right < limitR:
+                if arr1[left] <= arr1[right]:
                     arr2[curr] = arr1[left]
                     left += 1
-                elif left == i + step:
+                else:
                     arr2[curr] = arr1[right]
                     right += 1
-                elif arr1[left] <= arr1[right]:
-                    arr2[curr] = arr1[left]
-                    left += 1
-                elif arr1[left] > arr1[right]:
-                    arr2[curr] = arr1[right]
-                    right += 1
+                curr += 1
+ 
+            while left < limitL:
+                arr2[curr] = arr1[left]
+                left += 1
+                curr += 1
+
+            while right < limitR:
+                arr2[curr] = arr1[right]
+                right += 1
                 curr += 1
             i += 2 * step
         # important: copy the untouched end to the new array. It's not applied yet
@@ -88,6 +97,43 @@ def mergesortBU(arr1, option):
         # swap two arrays for cost efficiency
         arr1, arr2 = arr2, arr1
     return arr1
+
+def mergesortTD(arr, option):
+    length = len(arr)
+    if length < 2:
+        return arr
+    return msortTD(arr[:], arr, 0, len(arr))
+
+def msortTD(arrSrc, arrDst, start, end):
+    if end - start <= 1:
+        return arrDst
+    mid = (start + end) / 2
+    msortTD(arrDst, arrSrc, start, mid)
+    msortTD(arrDst, arrSrc, mid, end)
+    return mergeTD(arrSrc, arrDst, start, end)
+
+def mergeTD(arrSrc, arrDst, start, end):
+    mid = (start + end) / 2
+    curr = start
+    i = start
+    j = mid
+    while i < mid and j < end:
+        if arrSrc[i] <= arrSrc[j]:
+            arrDst[curr] = arrSrc[i]
+            i += 1
+        else:
+            arrDst[curr] = arrSrc[j]
+            j += 1
+        curr += 1
+    while i < mid:
+        arrDst[curr] = arrSrc[i]
+        i += 1
+        curr += 1
+    while j < end:
+        arrDst[curr] = arrSrc[j]
+        j += 1
+        curr += 1
+    return arrDst
 
 def quicksort(arr, option):
     """
@@ -267,11 +313,11 @@ print 'insertionsort'
 print ''
 
 print 'mergesort bottom-up'
-#testsort(mergesortBU, arrRand, arrSame, arrOrd, arrRev, '')
+testsort(mergesortBU, arrRand, arrSame, arrOrd, arrRev, '')
 print ''
 
 print 'mergesort top-down'
-#testsort(mergesortTD, arrRand, arrSame, arrOrd, arrRev, '')
+testsort(mergesortTD, arrRand, arrSame, arrOrd, arrRev, '')
 print ''
 
 print 'quicksort regular. Warning: dies on test 2, 3, 4'
@@ -291,7 +337,7 @@ print 'quicksort shuffle insertion Warning: dies on test 2'
 print ''
 
 print 'quicksort three-part'
-testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, '3s')
+#testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, '3s')
 print ''
 
 print 'quicksort three-part insertion'
