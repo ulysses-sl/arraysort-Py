@@ -135,6 +135,38 @@ def mergeTD(arrSrc, arrDst, start, end):
         curr += 1
     return arrDst
 
+def mergesortTDnaive(arr, option):
+    """
+    Naive textbook implementation creating many copies of array slices
+    """
+    return msortTDnaive(arr)
+
+def msortTDnaive(arr):
+    if len(arr) <= 1:
+        return arr
+    mid = len(arr) / 2
+    left = msortTDnaive(arr[:mid])
+    right = msortTDnaive(arr[mid:])
+    return mergeTDnaive(left, right)
+
+def mergeTDnaive(left, right):
+    result = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    while i < len(left):
+        result.append(left[i])
+        i += 1
+    while j < len(right):
+        result.append(right[j])
+        j += 1
+    return result
+
 def quicksort(arr, option):
     """
     implementation of quicksort with various options
@@ -161,10 +193,13 @@ def quicksort(arr, option):
 def qsort(arr, start, end, option):
     """
     Regular two-partition quicksort
+    Jon Bentley's two-sided partition scheme
+    [p| ---- <= p ---- | ---- ? ---- | ---- >= p ---- ]
+    eliminates O(n2) worst case on uniform array.
     """
     if end <= start or ('i' in option and end - start <= 12):
         return
-    if 'm' in option:
+    if 'm' in option:  # median of three
         if arr[start] > arr[end]:
             if arr[end] >= arr[(start+end)/2]:
                 arr[start], arr[end] = arr[end], arr[start]
@@ -176,12 +211,14 @@ def qsort(arr, start, end, option):
             elif arr[start] < arr[(start+end)/2]:
                 arr[start], arr[(start+end)/2] = arr[(start+end)/2], arr[start]
     p = arr[start]
-    i = start + 1
-    j = end
+    i = start
+    j = end + 1
     while True:
+        i += 1
+        j -= 1
         while i <= j and arr[i] < p:
             i += 1
-        while i <= j and arr[j] >= p:
+        while arr[j] > p:
             j -= 1
         if i >= j:
             break
@@ -295,8 +332,8 @@ def testsort(srt, arr1, arr2, arr3, arr4, option):
     print 'Time elapsed: ' + str(time.time() - t)
     print 'Correctly sorted: ' + str(issorted(arr))
 
-arrRand = [random.randint(0, 100000) for i in range(1000000 + random.randint(0, 127))]
-arrSame = [1 for i in range(1000000)]
+arrRand = [random.randint(0, 1000000) for i in range(1000000 + random.randint(0, 127))]
+arrSame = [1 for i in range(10000)]
 arrOrd = sorted(arrRand)
 arrRev = list(reversed(arrOrd))
 
@@ -313,26 +350,30 @@ print 'insertionsort'
 print ''
 
 print 'mergesort bottom-up'
-testsort(mergesortBU, arrRand, arrSame, arrOrd, arrRev, '')
+#testsort(mergesortBU, arrRand, arrSame, arrOrd, arrRev, '')
 print ''
 
 print 'mergesort top-down'
-testsort(mergesortTD, arrRand, arrSame, arrOrd, arrRev, '')
+#testsort(mergesortTD, arrRand, arrSame, arrOrd, arrRev, '')
 print ''
 
-print 'quicksort regular. Warning: dies on test 2, 3, 4'
+print 'mergesort top-down naive'
+#testsort(mergesortTDnaive, arrRand, arrSame, arrOrd, arrRev, '')
+print ''
+
+print 'quicksort regular. Warning: dies on test 3, 4'
 #testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, '')
 print ''
 
-print 'quicksort shuffle. Warning: dies on test 2'
-#testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, 's')
+print 'quicksort shuffle.'
+testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, 's')
 print ''
 
-print 'quicksort median shuffle. Warning: dies on test 2'
-#testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, 'sm')
+print 'quicksort median shuffle.'
+testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, 'sm')
 print ''
 
-print 'quicksort shuffle insertion Warning: dies on test 2'
+print 'quicksort shuffle insertion.'
 #testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, 'si')
 print ''
 
