@@ -1,7 +1,7 @@
 import random
 import time
 
-def bubblesort(arr, option):
+def bubblesort(arr):
     """
     implementation of bubble sort
     """
@@ -17,7 +17,7 @@ def bubblesort(arr, option):
             i += 1
     return arr
 
-def selectionsort(arr, option):
+def selectionsort(arr):
     """
     implementation of selection sort
     """
@@ -33,7 +33,7 @@ def selectionsort(arr, option):
             arr[i], arr[min_i] = arr[min_i], arr[i]
     return arr
 
-def insertionsort(arr, option):
+def insertionsort(arr):
     """
     implementation of insertion sort
     """
@@ -49,10 +49,10 @@ def insertionsort(arr, option):
         arr[j] = temp
     return arr
 
-def mergesortBU(arr1, option):
+def mergesortBU(arr1):
     """
     implementation of bottom-up two-array-swap merge sort
-    basically, start by pairing indices 1:1 from the beginning.
+    basicalefty, start by pairing indices 1:1 from the beginning.
     then step up to 2:2, 4:4 until (step > length)
     """
     length = len(arr1)
@@ -69,7 +69,6 @@ def mergesortBU(arr1, option):
             if length < limitR:
                 limitR = length
             limitL = i + step
-            
             while left < limitL and right < limitR:
                 if arr1[left] <= arr1[right]:
                     arr2[curr] = arr1[left]
@@ -78,12 +77,10 @@ def mergesortBU(arr1, option):
                     arr2[curr] = arr1[right]
                     right += 1
                 curr += 1
- 
             while left < limitL:
                 arr2[curr] = arr1[left]
                 left += 1
                 curr += 1
-
             while right < limitR:
                 arr2[curr] = arr1[right]
                 right += 1
@@ -98,7 +95,7 @@ def mergesortBU(arr1, option):
         arr1, arr2 = arr2, arr1
     return arr1
 
-def mergesortTD(arr, option):
+def mergesortTD(arr):
     length = len(arr)
     if length < 2:
         return arr
@@ -135,7 +132,7 @@ def mergeTD(arrSrc, arrDst, start, end):
         curr += 1
     return arrDst
 
-def mergesortTDnaive(arr, option):
+def mergesortTDnaive(arr):
     """
     Naive textbook implementation creating many copies of array slices
     """
@@ -167,49 +164,51 @@ def mergeTDnaive(left, right):
         j += 1
     return result
 
-def quicksort(arr, option):
+def quicksort(arr):
     """
     implementation of quicksort with various options
-    '': quicksort with leftmost element as pivot
-    's': shuffle before sort
-    '3': three-part quicksort
-    'i': finish with insertion sort
     """
     #arr = arr[:]
     length = len(arr)
     if length < 2:
         return arr
-    if 's' in option:
-        random.shuffle(arr)
-    if '3' in option:
-        qsort3p(arr, 0, length - 1, option)
-    else:
-        qsort(arr, 0, length - 1, option)
-    if 'i' in option:
-        return insertionsort(arr, '')
-    else:
-        return arr
+    random.shuffle(arr)
+    qsort(arr, 0, length - 1)
+    return arr
 
-def qsort(arr, start, end, option):
+def quicksort3(arr):
+    """
+    implementation of quicksort with various options
+    """
+    #arr = arr[:]
+    length = len(arr)
+    if length < 2:
+        return arr
+    random.shuffle(arr)
+    qsort3p(arr, 0, length - 1)
+    return arr
+
+def make_median_pivot(arr, start, end):
+    if arr[start] > arr[end]:
+        if arr[end] >= arr[(start+end)/2]:
+            arr[start], arr[end] = arr[end], arr[start]
+        elif arr[start] > arr[(start+end)/2]:
+            arr[start], arr[(start+end)/2] = arr[(start+end)/2], arr[start]
+    elif arr[start] < arr[end]:
+        if arr[end] <= arr[(start+end)/2]:
+            arr[start], arr[end] = arr[end], arr[start]
+        elif arr[start] < arr[(start+end)/2]:
+            arr[start], arr[(start+end)/2] = arr[(start+end)/2], arr[start]
+
+def qsort(arr, start, end):
     """
     Regular two-partition quicksort
     Jon Bentley's two-sided partition scheme
     [p| ---- <= p ---- | ---- ? ---- | ---- >= p ---- ]
     eliminates O(n2) worst case on uniform array.
     """
-    if end <= start or ('i' in option and end - start <= 12):
+    if end <= start:
         return
-    if 'm' in option:  # median of three
-        if arr[start] > arr[end]:
-            if arr[end] >= arr[(start+end)/2]:
-                arr[start], arr[end] = arr[end], arr[start]
-            elif arr[start] > arr[(start+end)/2]:
-                arr[start], arr[(start+end)/2] = arr[(start+end)/2], arr[start]
-        elif arr[start] < arr[end]:
-            if arr[end] <= arr[(start+end)/2]:
-                arr[start], arr[end] = arr[end], arr[start]
-            elif arr[start] < arr[(start+end)/2]:
-                arr[start], arr[(start+end)/2] = arr[(start+end)/2], arr[start]
     p = arr[start]
     i = start
     j = end + 1
@@ -224,70 +223,70 @@ def qsort(arr, start, end, option):
             break
         arr[i], arr[j] = arr[j], arr[i]
     arr[start], arr[i-1] = arr[i-1], arr[start]
-    qsort(arr, start, i - 2, option)
-    qsort(arr, i, end, option)
+    qsort(arr, start, i - 2)
+    qsort(arr, i, end)
 
-def qsort3p(arr, start, end, option):
+def qsort3p(arr, start, end):
     """
     Three-partition quicksort based on Bentley's algorithm
     This algorithm uses four pointers to push equal partitions
     to the both side and then swap them to center.
     """
-    if end <= start or ('i' in option and end - start <= 12):
+    if end <= start:
         return
     p = arr[start]  # pivot = leftmost element
-    ll = start      # edge of the left 
-    rr = end        # edge
-    l = start + 1   # current left item
-    r = end         # current right item
+    left = start      # edge of the left 
+    right = end        # edge
+    i = start + 1   # current left item
+    j = end         # current right item
     # variables for equal partition count on left and right
     left = 0
     right = 0
 
     while True:
-        # terminate when l crosses r
-        while l <= end and arr[l] < p:
-            l += 1
-        while l < r and arr[r] > p:
-            r -= 1
-        if l >= r:
+        # terminate when i crosses r
+        while i <= end and arr[i] < p:
+            i += 1
+        while i < j and arr[j] > p:
+            j -= 1
+        if i >= j:
             break
 
-        # if left is not small AND right is not big, swap
-        arr[l], arr[r] = arr[r], arr[l]
+        # if left is not smaleft AND right is not big, swap
+        arr[i], arr[j] = arr[j], arr[i]
 
         # if left item is equal to pivot, swap it to the left
-        if arr[l] == p:
-            while ll < l and arr[ll] == p:
-                ll += 1
-            arr[l], arr[ll] = arr[ll], arr[l]
-            l += 1
+        if arr[i] == p:
+            while left < i and arr[left] == p:
+                left += 1
+            arr[i], arr[left] = arr[left], arr[i]
+            i += 1
             left += 1
 
         # if right item is equal to pivot, swap it to the right
-        if arr[r] == p:
-            while rr > r and arr[rr] == p:
-                rr -= 1
-            arr[r], arr[rr] = arr[rr], arr[r]
-            r -= 1
+        if arr[j] == p:
+            while right > j and arr[right] == p:
+                right -= 1
+            arr[j], arr[right] = arr[right], arr[j]
+            j -= 1
             right += 1
 
     # swap the original pivot
-    arr[start], arr[l-1] = arr[l-1], arr[start]
+    arr[start], arr[i-1] = arr[i-1], arr[start]
 
-    # move all same element around pivot
-    r = l
-    l -= 2
-    if arr[rr] == p:
-        rr += 1
+    # move aleft same element around pivot
+    j = i
+    i -= 2
+    if arr[right] == p:
+        right += 1
     for i in range(left):
-        arr[start+1+i], arr[l] = arr[l], arr[start+1+i]
-        l -= 1
+        arr[start+1+i], arr[i] = arr[i], arr[start+1+i]
+        i -= 1
     for i in range(right):
-        arr[end-i], arr[r] = arr[r], arr[end-i]
-        r += 1
-    qsort3p(arr, start, l, option)
-    qsort3p(arr, r, end, option)
+        arr[end-i], arr[j] = arr[j], arr[end-i]
+        j += 1
+    qsort3p(arr, start, i)
+    qsort3p(arr, j, end)
 
 def issorted(arr):
     for i in range(len(arr) - 1):
@@ -295,42 +294,50 @@ def issorted(arr):
             return False
     return True
 
-def testsort(srt, arr1, arr2, arr3, arr4, option):
-    print 'Works on empty array: ' + str(not srt([], ''))
-    print 'Works on singleton: ' + str([1] == srt([1], ''))
-    print 'Works on a trivial case: ' + (str([0,1] == srt([1,0], '')) and str([0,1] == srt([0,1], '')))
+def testsort(sort, arrRand, arrSame, arrOrd, arrRev):
+    assert([] == sort([]))
+    print 'Works on empty array.'
+    assert([1] == sort([1]))
+    print 'Works on singleton.'
+    assert([0,1] == sort([1,0]))
+    assert([0,1] == sort([0,1]))
+    print 'Works on a trivial case.'
     
     print 'Test 1. Sorting a random array'
-    arr = arr1[:]
+    arr = arrRand[:]
     print 'sorting ' + str(len(arr)) + 'numbers'
     t = time.time()
-    arr = srt(arr, option)
+    arr = sort(arr)
     print 'Time elapsed: ' + str(time.time() - t)
-    print 'Correctly sorted: ' + str(issorted(arr))
+    assert(arr == arrOrd)
+    print 'Correctly sorted'
     
     print 'Test 2. Sorting a uniform array'
-    arr = arr2[:]
+    arr = arrSame[:]
     print 'sorting ' + str(len(arr)) + 'numbers'
     t = time.time()
-    arr = srt(arr, option)
+    arr = sort(arr)
     print 'Time elapsed: ' + str(time.time() - t)
-    print 'Correctly sorted: ' + str(issorted(arr))
+    assert(arr == arrSame)
+    print 'Correctly sorted'
     
     print 'Test 3. Sorting a sorted array'
-    arr = arr3[:]
+    arr = arrOrd[:]
     print 'sorting ' + str(len(arr)) + 'numbers'
     t = time.time()
-    arr = srt(arr, option)
+    arr = sort(arr)
     print 'Time elapsed: ' + str(time.time() - t)
-    print 'Correctly sorted: ' + str(issorted(arr))
+    assert(arr == arrOrd)
+    print 'Correctly sorted'
     
     print 'Test 4. Sorting a reverse-sorted array'
-    arr = arr4[:]
+    arr = arrRev[:]
     print 'sorting ' + str(len(arr)) + 'numbers'
     t = time.time()
-    arr = srt(arr, option)
+    arr = sort(arr)
     print 'Time elapsed: ' + str(time.time() - t)
-    print 'Correctly sorted: ' + str(issorted(arr))
+    assert(arr == arrOrd)
+    print 'Correctly sorted'
 
 arrRand = [random.randint(0, 1000000) for i in range(1000000 + random.randint(0, 127))]
 arrSame = [1 for i in range(10000)]
@@ -338,51 +345,34 @@ arrOrd = sorted(arrRand)
 arrRev = list(reversed(arrOrd))
 
 print 'bubblesort'
-#testsort(bubblesort, arrRand, arrSame, arrOrd, arrRev, '')
+#testsort(bubblesort, arrRand, arrSame, arrOrd, arrRev)
 print ''
 
 print 'selectionsort'
-#testsort(selectionsort, arrRand, arrSame, arrOrd, arrRev, '')
+#testsort(selectionsort, arrRand, arrSame, arrOrd, arrRev)
 print ''
 
 print 'insertionsort'
-#testsort(insertionsort, arrRand, arrSame, arrOrd, arrRev, '')
+#testsort(insertionsort, arrRand, arrSame, arrOrd, arrRev)
 print ''
 
 print 'mergesort bottom-up'
-#testsort(mergesortBU, arrRand, arrSame, arrOrd, arrRev, '')
+testsort(mergesortBU, arrRand, arrSame, arrOrd, arrRev)
 print ''
 
 print 'mergesort top-down'
-#testsort(mergesortTD, arrRand, arrSame, arrOrd, arrRev, '')
+testsort(mergesortTD, arrRand, arrSame, arrOrd, arrRev)
 print ''
 
 print 'mergesort top-down naive'
-#testsort(mergesortTDnaive, arrRand, arrSame, arrOrd, arrRev, '')
+testsort(mergesortTDnaive, arrRand, arrSame, arrOrd, arrRev)
 print ''
 
-print 'quicksort regular. Warning: dies on test 3, 4'
-#testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, '')
-print ''
-
-print 'quicksort shuffle.'
-testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, 's')
-print ''
-
-print 'quicksort median shuffle.'
-testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, 'sm')
-print ''
-
-print 'quicksort shuffle insertion.'
-#testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, 'si')
+print 'quicksort regular.'
+testsort(quicksort, arrRand, arrSame, arrOrd, arrRev)
 print ''
 
 print 'quicksort three-part'
-#testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, '3s')
+#testsort(quicksort3, arrRand, arrSame, arrOrd, arrRev)
 print ''
-
-print 'quicksort three-part insertion'
-#testsort(quicksort, arrRand, arrSame, arrOrd, arrRev, '3si')
-print ''
-
 
